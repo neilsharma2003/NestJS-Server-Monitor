@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { EntityNotFoundError, Repository, UpdateResult } from 'typeorm';
+import { EntityNotFoundError, Repository } from 'typeorm';
 import { CreateUserDTO } from './dtos/create-user.dto';
 import { v4 as UUIDv4 } from 'uuid';
 import { UpdateUserDTO, updateUserDTOSchema } from './dtos/update-user.dto';
@@ -54,7 +54,7 @@ export class UserRepository {
 
   async deleteUserById(id: string) {
     if (await this.getUserById(id)) throw new EntityNotFoundError(User, id);
-    const deletedUser = await this.userRepository.delete({ id: id })
+    await this.userRepository.delete({ id: id })
     return true
   }
 }

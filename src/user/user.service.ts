@@ -9,6 +9,7 @@ import * as bcrypt from 'bcrypt'
 export class UserService {
   constructor(private readonly userRepository: UserRepository) { }
   async getUserById(id: string) {
+    Joi.attempt(id, Joi.string().uuid())
     return this.userRepository.getUserById(id);
   }
 
@@ -29,6 +30,7 @@ export class UserService {
   }
 
   async deleteUserById(id: string) {
+    Joi.attempt(id, Joi.string().uuid())
     return this.userRepository.deleteUserById(id)
   }
 }
