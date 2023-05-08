@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { AuthController } from './auth.controller';
+import { AuthResolver } from './auth.resolver';
 import { AuthService } from './auth.service';
-import { User } from 'src/user/entities/user.entity';
+import { User } from '../user/entities/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
 
 @Module({
@@ -12,8 +12,7 @@ import { jwtConstants } from './constants';
     secret: jwtConstants.secret,
     signOptions: { expiresIn: 300 }
   })],
-  controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthResolver, AuthService],
   exports: [AuthService]
 })
 export class AuthModule { }

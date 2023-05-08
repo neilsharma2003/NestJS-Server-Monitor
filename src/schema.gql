@@ -8,6 +8,27 @@ type UserModel {
   email: String!
 }
 
+type SignInModel {
+  access_token: String!
+}
+
+type CreateMonitorModel {
+  resourceId: ID!
+  monitorName: String!
+  desiredStatusCode: Int!
+  method: String!
+  cronJobStarted: Boolean!
+}
+
+type StartMonitorModel {
+  resourceId: ID!
+  monitorName: String!
+  desiredStatusCode: Int!
+  method: String!
+  cronJobStarted: Boolean!
+  currentStatusCode: Int!
+}
+
 type Query {
   getUserById(id: ID!): UserModel!
   getAllUsers: [UserModel!]!
@@ -17,6 +38,11 @@ type Mutation {
   createUser(input: CreateUserInput!): UserModel!
   updateUser(input: UpdateUserInput!): UserModel!
   deleteUserById(id: ID!): Boolean!
+  signIn(input: SignInInput!): SignInModel!
+  createServerMonitor(input: CreateServerMonitorInput!): CreateMonitorModel!
+  startServerMonitor(input: StartServerMonitorInput!): StartMonitorModel!
+  stopServerMonitor: Boolean!
+  deleteServerMonitor: Boolean!
 }
 
 input CreateUserInput {
@@ -30,4 +56,21 @@ input UpdateUserInput {
   username: String
   email: String
   password: String
+}
+
+input SignInInput {
+  username: String!
+  password: String!
+}
+
+input CreateServerMonitorInput {
+  monitorName: String!
+  endpoint: String!
+  desiredStatusCode: Int!
+  options: String
+}
+
+input StartServerMonitorInput {
+  monitorName: String
+  resourceId: ID
 }

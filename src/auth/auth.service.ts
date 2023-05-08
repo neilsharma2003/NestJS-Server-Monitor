@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/user/entities/user.entity';
+import { User } from '../user/entities/user.entity'
 import { EntityNotFoundError, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt'
 import { JwtService } from '@nestjs/jwt';
+import * as Joi from 'joi';
+import { SignInDTO, signInDTOSchema } from './dtos/sign-in.dto';
 
 @Injectable()
 export class AuthService {
@@ -12,14 +14,17 @@ export class AuthService {
         private readonly jwtService: JwtService
     ) { }
 
-    async signIn(username: string, password: string) {
+    async signIn(input: SignInDTO) {
+        Joi.attempt(input, signInDTOSchema)
+        const { username, password } = input
         const user = await this.userRepository.findOne({
             where: {
                 username: username
             }
         })
         if (user) {
-            await bcrypt.compare(password, user.password)
+            const isValid: boolean = await bcrypt.compare(password, user.password)
+            if (!isValid) throw new Error('Incorrect password')
             const payload = { username: user.username, sub: user.id }
             return {
                 access_token: await this.jwtService.signAsync(payload)

@@ -8,6 +8,11 @@ import { DataSource } from 'typeorm';
 import { UserModule } from './user/user.module';
 import { User } from './user/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { ServerMonitorModule } from './server-monitor/server-monitor.module';
+import { Monitor } from './server-monitor/entities/monitor.entity';
+import { NotificationModule } from './notification/email.module';
+
 
 @Module({
   imports: [
@@ -16,6 +21,7 @@ import { AuthModule } from './auth/auth.module';
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       playground: true,
+      context: ({ req }: any) => ({ headers: req?.headers })
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -30,13 +36,16 @@ import { AuthModule } from './auth/auth.module';
           rejectUnauthorized: false, // ignore self-signed certificates
         },
       },
-      entities: [User],
+      entities: [User, Monitor],
       synchronize: false,
     }),
+    ScheduleModule.forRoot(),
     UserModule,
     AuthModule,
+    ServerMonitorModule,
+    NotificationModule
   ],
 })
 export class AppModule {
-  constructor(private dataSource: DataSource) { }
+  constructor(private readonly dataSource: DataSource) { }
 }
