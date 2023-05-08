@@ -68,7 +68,8 @@ export class ServerMonitorRepository {
         return { monitorName: monitor.monitor_name, method: monitor.method, resourceId: monitor.resource_id, desiredStatusCode: monitor.desired_status_code, cronJobStarted: monitor.is_cron_job_started }
     }
 
-    async manageServerMonitor(input: StartServerMonitorDTO, dateStamp: string, currentState: string) {
+    async startServerMonitor(input: StartServerMonitorDTO, dateStamp: string, currentState: string) {
+        this.startCronJob(input)
         const monitor = await this.getServerMonitor(input)
         let dateStamps: string[] = JSON.parse(monitor.cron_timestamps)
         let currentCronStates: string[] = JSON.parse(monitor.current_cron_state)

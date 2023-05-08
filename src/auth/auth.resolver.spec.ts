@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthController } from './auth.resolver';
+import { AuthResolver } from './auth.resolver';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
 import { JwtService } from '@nestjs/jwt';
@@ -9,15 +9,15 @@ import { Repository } from 'typeorm';
 import { faker } from '@faker-js/faker';
 
 
-describe('AuthController', () => {
-  let controller: AuthController;
+describe('AuthResolver', () => {
+  let controller: AuthResolver;
   let authService: AuthService;
   let userRepository: Repository<User>;
   let jwtService: JwtService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [AuthController],
+      controllers: [AuthResolver],
       providers: [
         AuthService,
         JwtService,
@@ -29,7 +29,7 @@ describe('AuthController', () => {
       ],
     }).compile();
 
-    controller = module.get<AuthController>(AuthController);
+    controller = module.get<AuthResolver>(AuthResolver);
     authService = module.get<AuthService>(AuthService);
     userRepository = module.get<Repository<User>>(getRepositoryToken(User));
     jwtService = module.get<JwtService>(JwtService);

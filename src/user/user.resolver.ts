@@ -16,7 +16,6 @@ export class UserResolver {
         return this.userService.getUserById(id);
     }
 
-    @UseGuards(AuthGuard)
     @Mutation(() => UserModel, { name: 'createUser' })
     async createUser(@Args('input', { nullable: false }) input: CreateUserInput): Promise<User> {
         return this.userService.createUser(input);

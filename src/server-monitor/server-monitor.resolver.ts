@@ -7,6 +7,7 @@ import { AuthGuard } from "src/auth/auth.guard";
 import { User } from "src/user.decorator";
 import { StartServerMonitorInput } from "./inputs/start-server-monitor.input";
 import { StartMonitorModel } from "./models/start-monitor.model";
+import { DeleteServerMonitorInput } from "./inputs/delete-server-monitor.input";
 
 @Resolver()
 export class ServerMonitorResolver {
@@ -34,8 +35,9 @@ export class ServerMonitorResolver {
 
     @UseGuards(AuthGuard)
     @Mutation(() => Boolean, { name: "deleteServerMonitor" })
-    async deleteServerMonitor() {
-
+    async deleteServerMonitor(input: DeleteServerMonitorInput) {
+        this.serverMonitorService.startCronJob()
+        this.serverMonitorService.deleteServerMonitor(input)
         return true
     }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { ServerMonitorRepository } from "./server-monitor.repository";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { fetchServer } from "./server-monitor-helper";
@@ -6,12 +6,18 @@ import { CreateServerMonitorDTO, createServerMonitorDTOSchema } from "./dtos/cre
 import * as Joi from "joi";
 import { StartServerMonitorDTO, startServerMonitorDTOSchema } from "./dtos/start-server-monitor.dto";
 import { DeleteServerMonitorDTO, deleteServerMonitorDTOSchema } from "./dtos/delete-server-monitor.dto";
+import { EmailService } from "src/notification/email.service";
+import { UserService } from "src/user/user.service";
 
 
 @Injectable()
 export class ServerMonitorService {
-    constructor(private readonly serverMonitorRepository: ServerMonitorRepository) { }
+    constructor(
+        private readonly serverMonitorRepository: ServerMonitorRepository,
+        private readonly emailService: EmailService,
+        private readonly userService: UserService) { }
     private cronJobFlag: boolean = false
+    private cronIsRunning: boolean = false
 
     startCronJob() {
         this.cronJobFlag = true
@@ -34,7 +40,7 @@ export class ServerMonitorService {
 
     @Cron(CronExpression.EVERY_10_SECONDS)
     async startServerMonitor(input: StartServerMonitorDTO) {
-        if (input && this.cronJobFlag) {
+        if ((input && this.cronJobFlag) || this.cronIsRunning) {
             try {
                 Joi.attempt(input, startServerMonitorDTOSchema)
                 const { endpoint, request_options } = await this.getServerMonitor(input)
@@ -45,8 +51,13 @@ export class ServerMonitorService {
                 const dateStamp = (new Date).toISOString()
                 const currentState = (await this.getServerMonitor(input)).desired_status_code === response.status ? "AVAILABLE" : "UNAVAILABLE"
 
-                const monitor = await this.serverMonitorRepository.manageServerMonitor(input, dateStamp, currentState)
+                const monitor = await this.serverMonitorRepository.startServerMonitor(input, dateStamp, currentState)
+                this.cronIsRunning = true
+                console.log({ currentStatusCode: response.status, currentState, dateStamp })
 
+
+                const email = (await this.userService.getUserById(monitor.id)).email
+                this.emailService.sendErrorEmail(monitor.monitor_name, email, monitor.endpoint, response.status)
                 return {
                     resourceId: monitor.resource_id,
                     monitorName: monitor.monitor_name,
@@ -55,8 +66,6 @@ export class ServerMonitorService {
                     cronJobStarted: monitor.is_cron_job_started,
                     currentStatusCode: response.status
                 }
-                // update entity to accept 2 array columns with equal length and consisting of dates[] and "PASS" | "FAIL"
-                // upon FAIL (eg. desiredStatusCode != response.status), call a email service wrapping around nodemailer
             }
 
             catch (err) {
