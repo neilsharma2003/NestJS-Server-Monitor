@@ -7,7 +7,7 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+NestJS API for Server Monitoring with instructions for use (using a pre-setup Postman workplace)
 
 ## Installation
 
