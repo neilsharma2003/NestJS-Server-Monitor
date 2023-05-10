@@ -38,7 +38,7 @@ export class ServerMonitorService {
         return await this.serverMonitorRepository.createServerMonitor(input, username)
     }
 
-    @Cron(CronExpression.EVERY_10_SECONDS)
+    @Cron(CronExpression.EVERY_5_MINUTES)
     async startServerMonitor(input: StartServerMonitorDTO) {
         if ((input && this.cronJobFlag) || this.cronIsRunning) {
             try {

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
+import { Role, User } from './entities/user.entity';
 import { EntityNotFoundError, Repository } from 'typeorm';
 import { CreateUserDTO } from './dtos/create-user.dto';
 import { v4 as UUIDv4 } from 'uuid';
@@ -29,6 +29,7 @@ export class UserRepository {
       username: input.username,
       email: input.email,
       password: input.password,
+      role: Role.User
     });
 
     await this.userRepository.save(user)

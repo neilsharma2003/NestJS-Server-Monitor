@@ -8,6 +8,7 @@ import { User } from "src/user.decorator";
 import { StartServerMonitorInput } from "./inputs/start-server-monitor.input";
 import { StartMonitorModel } from "./models/start-monitor.model";
 import { DeleteServerMonitorInput } from "./inputs/delete-server-monitor.input";
+import { Role } from "src/user/entities/user.entity";
 
 @Resolver()
 export class ServerMonitorResolver {
@@ -15,7 +16,7 @@ export class ServerMonitorResolver {
 
     @UseGuards(AuthGuard)
     @Mutation(() => CreateMonitorModel, { name: "createServerMonitor" })
-    async createServerMonitor(@User() user: { username: string, sub: string, iat: number, exp: number }, @Args('input') input: CreateServerMonitorInput): Promise<CreateMonitorModel> {
+    async createServerMonitor(@User() user: { username: string, role: Role, sub: string, iat: number, exp: number }, @Args('input') input: CreateServerMonitorInput): Promise<CreateMonitorModel> {
         return await this.serverMonitorService.createServerMonitor(input, user.username)
     }
 

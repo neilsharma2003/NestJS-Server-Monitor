@@ -10,7 +10,7 @@ import { jwtConstants } from './constants';
   imports: [TypeOrmModule.forFeature([User]), JwtModule.register({
     global: true,
     secret: jwtConstants.secret,
-    signOptions: { expiresIn: 300 }
+    signOptions: { expiresIn: '15m' }
   })],
   providers: [AuthResolver, AuthService],
   exports: [AuthService]
