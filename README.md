@@ -9,6 +9,15 @@
 
 NestJS API for Server Monitoring with instructions for use (using a pre-setup Postman workplace)
 
+# Use with Local Installation
+
+Use https://tinyurl.com/334ztzyp/ to open the Postman Collection. Open the body for "Create User" and insert your credentials. Then, generate a JWT Token. You can then create a 
+
+# Basic ER Diagram for Database Schema
+
+![Screenshot](nestjs_postgresql - public.png)
+
+
 ## Installation
 
 ```bash
@@ -41,16 +50,4 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
-## Support
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
