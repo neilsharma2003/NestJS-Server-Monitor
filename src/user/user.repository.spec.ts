@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserRepository } from './user.repository';
 import { faker } from '@faker-js/faker'
-import { User } from './entities/user.entity';
+import { Role, User } from './entities/user.entity';
 import { CreateUserDTO } from './dtos/create-user.dto';
 import { UpdateUserDTO } from './dtos/update-user.dto';
 import * as bcrypt from 'bcrypt'
@@ -31,7 +31,7 @@ describe('UserRepository', () => {
 
     describe('getUserById', () => {
         it('should return User entity', async () => {
-            const expectedUser: User = { id: faker.datatype.uuid(), username: faker.name.firstName(), email: faker.internet.email(), password: faker.internet.password() }
+            const expectedUser: User = { id: faker.datatype.uuid(), username: faker.name.firstName(), email: faker.internet.email(), password: faker.internet.password(), role: Role.User, monitors: [] }
             jest.spyOn(userRepository, 'getUserById').mockResolvedValue(expectedUser);
 
             const result = await userRepository.getUserById(expectedUser.id)
@@ -44,11 +44,12 @@ describe('UserRepository', () => {
     })
 
     describe('createUser', () => {
+        const password = faker.internet.password()
         const input: CreateUserDTO = {
-            username: faker.internet.userName(), email: faker.internet.email(), password: faker.internet.password(),
+            username: faker.internet.userName(), email: faker.internet.email(), password: password, confirmPassword: password
         }
         const user: User = {
-            id: faker.datatype.uuid(), ...input
+            id: faker.datatype.uuid(), role: Role.User, monitors: [], ...input
         }
 
         it('should return User entity', async () => {
@@ -77,7 +78,9 @@ describe('UserRepository', () => {
                 id: updatedUser.id,
                 username: updatedUser?.username as string,
                 email: updatedUser?.email as string,
-                password: await bcrypt.hash(faker.internet.password(), 10)
+                password: await bcrypt.hash(faker.internet.password(), 10),
+                role: Role.User,
+                monitors: []
             }
             jest.spyOn(userRepository, 'updateUser').mockResolvedValue(expectedUser);
 

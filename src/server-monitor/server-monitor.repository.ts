@@ -69,7 +69,7 @@ export class ServerMonitorRepository {
     }
 
     async startServerMonitor(input: StartServerMonitorDTO, dateStamp: string, currentState: string) {
-        this.startCronJob(input)
+        await this.startCronJob(input)
         const monitor = await this.getServerMonitor(input)
         let dateStamps: string[] = JSON.parse(monitor.cron_timestamps)
         let currentCronStates: string[] = JSON.parse(monitor.current_cron_state)
@@ -77,7 +77,7 @@ export class ServerMonitorRepository {
         dateStamps.push(dateStamp)
         currentCronStates.push(currentState)
 
-        this.monitorRepository.update(monitor.resource_id, {
+        await this.monitorRepository.update(monitor.resource_id, {
             cron_timestamps: JSON.stringify(dateStamps),
             current_cron_state: JSON.stringify(currentCronStates)
         })
@@ -86,7 +86,7 @@ export class ServerMonitorRepository {
     }
 
     async deleteServerMonitor(input: DeleteServerMonitorDTO) {
-        this.getServerMonitor(input)
-        this.monitorRepository.delete(input?.monitorName || input?.resourceId as string)
+        await this.getServerMonitor(input)
+        await this.monitorRepository.delete(input?.monitorName || input?.resourceId as string)
     }
 }

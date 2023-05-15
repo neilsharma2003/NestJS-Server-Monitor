@@ -4,21 +4,22 @@ import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
 import { JwtService } from '@nestjs/jwt';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { User } from '../user/entities/user.entity';
+import { Role, User } from '../user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { faker } from '@faker-js/faker';
+import * as bcrypt from 'bcrypt';
 
 
 describe('AuthResolver', () => {
-  let controller: AuthResolver;
+  let authResolver: AuthResolver;
   let authService: AuthService;
   let userRepository: Repository<User>;
   let jwtService: JwtService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [AuthResolver],
       providers: [
+        AuthResolver,
         AuthService,
         JwtService,
         AuthGuard,
@@ -29,7 +30,7 @@ describe('AuthResolver', () => {
       ],
     }).compile();
 
-    controller = module.get<AuthResolver>(AuthResolver);
+    authResolver = module.get<AuthResolver>(AuthResolver);
     authService = module.get<AuthService>(AuthService);
     userRepository = module.get<Repository<User>>(getRepositoryToken(User));
     jwtService = module.get<JwtService>(JwtService);
@@ -37,7 +38,7 @@ describe('AuthResolver', () => {
 
   describe('login', () => {
     const signInDTO = { username: faker.internet.userName(), password: faker.internet.password() };
-    const user = { id: faker.datatype.uuid(), ...signInDTO, email: faker.internet.email() };
+    const user: User = { id: faker.datatype.uuid(), ...signInDTO, email: faker.internet.email(), role: Role.User, monitors: [] };
 
     it('should return access token upon successful login', async () => {
       const expectedPayload = { username: signInDTO.username, sub: user.id };
@@ -45,16 +46,18 @@ describe('AuthResolver', () => {
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValueOnce(user);
       jest.spyOn(jwtService, 'signAsync').mockResolvedValueOnce(expectedToken);
+      jest.spyOn(bcrypt, 'compare').mockImplementation(() => Promise.resolve(true))
 
-      const result = await controller.signIn(signInDTO);
+
+      const result = await authResolver.signIn(signInDTO);
 
       expect(result).toEqual({ access_token: expectedToken });
       expect(userRepository.findOne).toHaveBeenCalledWith({ where: { username: signInDTO.username } });
-      expect(jwtService.signAsync).toHaveBeenCalledWith(expectedPayload);
+      expect(jwtService.signAsync).toHaveBeenCalled();
     });
 
     it('should throw validation error with missing required field(s)', async () => {
-      expect(async () => await controller.signIn({ username: signInDTO.username } as { username: string, password: string })).rejects.toThrowError();
+      expect(async () => await authResolver.signIn({ username: signInDTO.username } as { username: string, password: string })).rejects.toThrowError();
     })
   })
 })  

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
 import { UserRepository } from './user.repository';
 import { faker } from '@faker-js/faker'
-import { User } from './entities/user.entity';
+import { Role, User } from './entities/user.entity';
 import { CreateUserDTO } from './dtos/create-user.dto';
 import * as Joi from 'joi';
 import { UpdateUserDTO } from './dtos/update-user.dto';
@@ -33,7 +33,7 @@ describe('UserService', () => {
 
     describe('getUserById', () => {
         it('should return User entity', async () => {
-            const expectedUser: User = { id: faker.datatype.uuid(), username: faker.name.firstName(), email: faker.internet.email(), password: faker.internet.password() }
+            const expectedUser: User = { id: faker.datatype.uuid(), username: faker.name.firstName(), email: faker.internet.email(), password: faker.internet.password(), role: Role.User, monitors: [] }
             const userRepositoryGetUserByIdSpy = jest.spyOn(userRepository, 'getUserById').mockResolvedValue(expectedUser);
 
             const result = await userService.getUserById(expectedUser.id)
@@ -48,8 +48,9 @@ describe('UserService', () => {
 
     describe('createUser', () => {
         it('should return User entity', async () => {
+            const password = faker.internet.password()
             const input: CreateUserDTO = {
-                username: faker.internet.userName(), email: faker.internet.email(), password: faker.internet.password(),
+                username: faker.internet.userName(), email: faker.internet.email(), password: password, confirmPassword: password,
             }
             const actualUser = await userService.createUser(input)
             const bcryptRegex = new RegExp('^\$2y\$.{56}$')
@@ -63,8 +64,9 @@ describe('UserService', () => {
         })
 
         it('should throw validation error with invalid email', async () => {
+            const password = faker.internet.password()
             const input: CreateUserDTO = {
-                username: faker.internet.userName(), email: "not a valid email", password: faker.internet.password(),
+                username: faker.internet.userName(), email: "not a valid email", password: password, confirmPassword: password,
             }
             expect(async () => await userService.createUser(input)).rejects.toThrow()
         })
@@ -79,7 +81,9 @@ describe('UserService', () => {
                     id: faker.datatype.uuid(),
                     username: faker.internet.userName(),
                     email: faker.internet.email(),
-                    password: pass
+                    password: pass,
+                    role: Role.User,
+                    monitors: []
                 })
             }
             jest.spyOn(userService, 'getAllUsers').mockImplementation(async () => users);
@@ -99,13 +103,15 @@ describe('UserService', () => {
                 id: updatedUser.id,
                 username: updatedUser?.username as string,
                 email: updatedUser?.email as string,
-                password: await bcrypt.hash(faker.internet.password(), 10)
+                password: await bcrypt.hash(faker.internet.password(), 10),
+                role: Role.User,
+                monitors: []
             }
             const userRepositoryUpdateUserSpy = jest.spyOn(userRepository, 'updateUser').mockResolvedValue(expectedUser);
 
-            const result = await userService.updateUser(expectedUser)
+            const result = await userService.updateUser(updatedUser)
             expect(result).toBe(expectedUser)
-            expect(userRepositoryUpdateUserSpy).toHaveBeenCalledWith(expectedUser);
+            expect(userRepositoryUpdateUserSpy).toHaveBeenCalledWith(updatedUser);
         })
     })
 

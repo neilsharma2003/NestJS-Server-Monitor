@@ -1,4 +1,4 @@
-import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { ServerMonitorRepository } from "./server-monitor.repository";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { fetchServer } from "./server-monitor-helper";
@@ -6,8 +6,8 @@ import { CreateServerMonitorDTO, createServerMonitorDTOSchema } from "./dtos/cre
 import * as Joi from "joi";
 import { StartServerMonitorDTO, startServerMonitorDTOSchema } from "./dtos/start-server-monitor.dto";
 import { DeleteServerMonitorDTO, deleteServerMonitorDTOSchema } from "./dtos/delete-server-monitor.dto";
-import { EmailService } from "src/notification/email.service";
-import { UserService } from "src/user/user.service";
+import { EmailService } from "../notification/email.service";
+import { UserService } from "../user/user.service";
 
 
 @Injectable()
@@ -16,6 +16,7 @@ export class ServerMonitorService {
         private readonly serverMonitorRepository: ServerMonitorRepository,
         private readonly emailService: EmailService,
         private readonly userService: UserService) { }
+
     private cronJobFlag: boolean = false
     private cronIsRunning: boolean = false
 
@@ -34,7 +35,6 @@ export class ServerMonitorService {
 
     async createServerMonitor(input: CreateServerMonitorDTO, username: string) {
         Joi.attempt(input, createServerMonitorDTOSchema)
-        // check if monitor exists and throw on repo level
         return await this.serverMonitorRepository.createServerMonitor(input, username)
     }
 
@@ -46,7 +46,7 @@ export class ServerMonitorService {
                 const { endpoint, request_options } = await this.getServerMonitor(input)
                 const response = await fetchServer({ endpoint, options: request_options })
 
-                this.serverMonitorRepository.startCronJob(input)
+                await this.serverMonitorRepository.startCronJob(input)
 
                 const dateStamp = (new Date).toISOString()
                 const currentState = (await this.getServerMonitor(input)).desired_status_code === response.status ? "AVAILABLE" : "UNAVAILABLE"
@@ -82,6 +82,6 @@ export class ServerMonitorService {
 
     async deleteServerMonitor(input: DeleteServerMonitorDTO) {
         Joi.attempt(input, deleteServerMonitorDTOSchema)
-        this.serverMonitorRepository.deleteServerMonitor(input)
+        await this.serverMonitorRepository.deleteServerMonitor(input)
     }
 }

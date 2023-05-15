@@ -1,4 +1,4 @@
-import { Monitor } from 'src/server-monitor/entities/monitor.entity';
+import { Monitor } from '../../server-monitor/entities/monitor.entity';
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum Role {

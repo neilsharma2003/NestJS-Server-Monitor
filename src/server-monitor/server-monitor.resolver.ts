@@ -3,12 +3,12 @@ import { ServerMonitorService } from "./server-monitor.service";
 import { CreateMonitorModel } from "./models/create-monitor.model";
 import { CreateServerMonitorInput } from "./inputs/create-server-monitor.input";
 import { UseGuards } from "@nestjs/common";
-import { AuthGuard } from "src/auth/auth.guard";
-import { User } from "src/user.decorator";
+import { AuthGuard } from "../auth/auth.guard";
+import { User } from "../decorators/user.decorator";
 import { StartServerMonitorInput } from "./inputs/start-server-monitor.input";
 import { StartMonitorModel } from "./models/start-monitor.model";
 import { DeleteServerMonitorInput } from "./inputs/delete-server-monitor.input";
-import { Role } from "src/user/entities/user.entity";
+import { Role } from "../user/entities/user.entity";
 
 @Resolver()
 export class ServerMonitorResolver {
@@ -38,7 +38,7 @@ export class ServerMonitorResolver {
     @Mutation(() => Boolean, { name: "deleteServerMonitor" })
     async deleteServerMonitor(input: DeleteServerMonitorInput) {
         this.serverMonitorService.startCronJob()
-        this.serverMonitorService.deleteServerMonitor(input)
+        await this.serverMonitorService.deleteServerMonitor(input)
         return true
     }
 }
