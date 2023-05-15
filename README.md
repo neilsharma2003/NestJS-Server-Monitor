@@ -11,7 +11,9 @@ NestJS API for Server Monitoring with instructions for use (using a pre-setup Po
 
 # Use with Local Installation
 
-Use https://tinyurl.com/334ztzyp/ to open the Postman Collection. Open the body for "Create User" and insert your credentials. Then, generate a JWT Token. You can then create a 
+<a href="https://tinyurl.com/334ztzyp/" target="blank">Postman Collection</a>
+
+Use  to open the Postman Collection. Open the body for "Create User" and insert your credentials. Then, generate a JWT Token. You can then create a 
 
 # Basic ER Diagram for Database Schema
 
