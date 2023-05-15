@@ -42,7 +42,7 @@ type Mutation {
   createServerMonitor(input: CreateServerMonitorInput!): CreateMonitorModel!
   startServerMonitor(input: StartServerMonitorInput!): StartMonitorModel!
   stopServerMonitor: Boolean!
-  deleteServerMonitor: Boolean!
+  deleteServerMonitor(input: DeleteServerMonitorInput!): Boolean!
 }
 
 input CreateUserInput {
@@ -74,4 +74,9 @@ input CreateServerMonitorInput {
 input StartServerMonitorInput {
   monitorName: String
   resourceId: ID
+}
+
+input DeleteServerMonitorInput {
+  monitorName: String
+  resourceId: String
 }

@@ -36,7 +36,7 @@ export class ServerMonitorResolver {
 
     @UseGuards(AuthGuard)
     @Mutation(() => Boolean, { name: "deleteServerMonitor" })
-    async deleteServerMonitor(input: DeleteServerMonitorInput) {
+    async deleteServerMonitor(@Args('input') input: DeleteServerMonitorInput) {
         this.serverMonitorService.startCronJob()
         await this.serverMonitorService.deleteServerMonitor(input)
         return true
