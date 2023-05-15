@@ -12,7 +12,7 @@ NestJS API for Server Monitoring with instructions for use (using a pre-setup Po
 # Use with Local Installation
 
 
-Use <a href="https://tinyurl.com/334ztzyp/" target="_blank"><b><u>Server Monitor Postman Collection</b></u></a> to open the Postman Collection. Open the body for "Create User" and insert your credentials. Then, generate a JWT Token. You can then create a 
+Use <a href="https://tinyurl.com/334ztzyp/" target="_blank"><b><u>Server Monitor Postman Collection</b></u></a> to open the Postman Collection. Open the body for "Create User" and insert your credentials. Then, generate a JWT Token. You can then create a server monitor and configure your "options" (part of the fetch, where you can provide headers, CORS policy, HTTP method/request body, etc). Finally you start the server monitoring with associated email notifications. Please use the Delete Server Monitor GraphQL endpoint to delete your server monitor.
 
 # Basic ER Diagram for Database Schema
 
