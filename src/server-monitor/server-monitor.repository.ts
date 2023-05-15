@@ -86,13 +86,8 @@ export class ServerMonitorRepository {
     }
 
     async deleteServerMonitor(input: DeleteServerMonitorDTO) {
-        await this.getServerMonitor(input)
-        if (input?.monitorName) {
-            await this.monitorRepository.delete(input?.monitorName)
-        }
-        else if (input?.resourceId) {
-            await this.monitorRepository.delete(input?.resourceId)
-        }
+        const user: Monitor = await this.getServerMonitor(input)
+        await this.monitorRepository.delete(user.resource_id)
 
     }
 }
