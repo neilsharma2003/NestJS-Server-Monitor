@@ -15,7 +15,7 @@ Use https://tinyurl.com/334ztzyp/ to open the Postman Collection. Open the body 
 
 # Basic ER Diagram for Database Schema
 
-![Screenshot](erd.png)
+![Screenshot](erdiagram.png)
 
 
 ## Installation
